@@ -26,3 +26,7 @@ docker-rmi:
 	-sudo docker rmi htmltopdf
 	sudo docker rmi $$(sudo docker images 'htmltopdf' -a -q)
 
+.PHONY: check-docker-layers
+check-docker-layers:
+	sudo docker history htmltopdf:${version}
+
