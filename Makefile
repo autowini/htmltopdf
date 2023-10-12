@@ -1,4 +1,6 @@
 version = 0.1.6
+image_name = htmltopdf
+container_name = htmltopdf
 
 .PHONY: all
 all: clean docker-build
@@ -14,19 +16,23 @@ run:
 
 .PHONY: docker-build
 docker-build:
-	sudo docker build . -t htmltopdf -t htmltopdf:${version}
+	sudo docker build . -t ${image_name} -t ${image_name}:${version}
 
 .PHONY: docker-run
 docker-run:
-	sudo docker run -d --name htmltopdf -p 5000:5000 htmltopdf:${version}
+	sudo docker run -d --name ${container_name} -p 5000:5000 ${image_name}:${version}
+
+.PHONY: docker-stop
+docker-stop:
+	sudo docker rm -f ${container_name}
 
 .PHONY: docker-rmi
 docker-rmi:
 	@# https://www.gnu.org/software/make/manual/html_node/Errors.html#Errors-in-Recipes
-	-sudo docker rmi htmltopdf
-	sudo docker rmi $$(sudo docker images 'htmltopdf' -a -q)
+	-sudo docker rmi ${image_name}
+	sudo docker rmi $$(sudo docker images '${image_name}' -a -q)
 
 .PHONY: check-docker-layers
 check-docker-layers:
-	sudo docker history htmltopdf:${version}
+	sudo docker history ${image_name}:${version}
 
