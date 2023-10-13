@@ -1,4 +1,5 @@
 import json
+import time
 from functools import wraps
 from time import process_time
 
@@ -12,15 +13,16 @@ app = Flask(__name__)
 def print_elapsed_time(func):
     @wraps(func)
     def wrapper(**kwargs):
-        start = process_time()
+        start = time.perf_counter()
         app.logger.info(start)
 
         # 함수 실행
         result = func(**kwargs)
 
-        end = process_time()
+        end = time.perf_counter()
         app.logger.info(end)
-        app.logger.info("\tElapsed time for function: %.3f s" % (end - start))
+        elapsed_time = (end - start)
+        app.logger.info("\tElapsed time for function: %.3f s" % elapsed_time)
         return result
 
     return wrapper
