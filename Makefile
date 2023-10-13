@@ -1,9 +1,9 @@
-version = 0.1.8
+version = 0.1.9
 image_name = htmltopdf
 container_name = htmltopdf
 
 .PHONY: all
-all: clean docker-build
+all: clean
 
 .PHONY: clean
 clean: docker-rmi
