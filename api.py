@@ -28,7 +28,7 @@ def print_elapsed_time(func):
 
 wkhtmltopdf_options = {
     'page-size': 'A4',  # A4, Letter, Legal
-    'orientation': 'portrait',  # portrait, landscape
+    # 'orientation': 'portrait',  # portrait, landscape
     'dpi': 1200,
     'encoding': "UTF-8",
 }
@@ -39,6 +39,8 @@ wkhtmltopdf_options = {
 def get_pdf_from_url():
     # data: dict = request.json
     data: dict = request.args
+    orientation = data.get('orientation', 'portrait')
+    wkhtmltopdf_options['orientation'] = orientation
 
     try:
         app.logger.info(data['url'])
@@ -69,6 +71,8 @@ def get_pdf_from_url():
 @app.route(rule='/pdf/html', methods=['POST'])
 def get_pdf_from_string_html():
     data: dict = request.json
+    orientation = data.get('orientation', 'portrait')
+    wkhtmltopdf_options['orientation'] = orientation
 
     try:
         app.logger.debug(data['html'])
