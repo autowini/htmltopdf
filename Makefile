@@ -26,6 +26,10 @@ docker-run:
 docker-stop:
 	sudo docker rm -f ${container_name}
 
+.PHONY: docker-logs
+docker-logs:
+	sudo docker logs -f ${container_name}
+
 .PHONY: docker-rmi
 docker-rmi:
 	@# https://www.gnu.org/software/make/manual/html_node/Errors.html#Errors-in-Recipes
