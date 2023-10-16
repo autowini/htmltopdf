@@ -29,9 +29,8 @@ def print_elapsed_time(func):
 
 wkhtmltopdf_options = {
     'page-size': 'A4',  # A4, Letter, Legal
-    # 'orientation': 'portrait',  # portrait, landscape
-    'dpi': 1200,
     'encoding': "UTF-8",
+    'minimum-font-size': "14",
 }
 
 
