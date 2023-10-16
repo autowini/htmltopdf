@@ -1,7 +1,6 @@
 import json
 import time
 from functools import wraps
-from time import process_time
 
 import pdfkit
 from flask import Flask, Response, request
@@ -41,8 +40,8 @@ wkhtmltopdf_options = {
 def get_pdf_from_url():
     # data: dict = request.json
     data: dict = request.args
-    orientation = data.get('orientation', 'portrait')
-    wkhtmltopdf_options['orientation'] = orientation
+    _orientation = data.get('orientation', 'portrait')
+    wkhtmltopdf_options['orientation'] = _orientation
 
     try:
         app.logger.info(data['url'])
@@ -73,12 +72,22 @@ def get_pdf_from_url():
 @app.route(rule='/pdf/html', methods=['POST'])
 def get_pdf_from_string_html():
     data: dict = request.json
-    orientation = data.get('orientation', 'portrait')
-    wkhtmltopdf_options['orientation'] = orientation
+
+    # HTML
+    _html = data['html']
+
+    # CSS
+    _css_path = data['css']
+    wkhtmltopdf_options['user-style-sheet'] = data['css']
+
+    # Orientation
+    _orientation = data.get('orientation', 'portrait')
+    wkhtmltopdf_options['orientation'] = _orientation
 
     try:
-        app.logger.debug(data['html'])
-        binary_pdf = pdfkit.from_string(input=data['html'],
+        app.logger.debug(_html)
+        binary_pdf = pdfkit.from_string(input=_html,
+                                        css=_css_path,
                                         options=wkhtmltopdf_options)
     except Exception as e:
         app.logger.error(e)
@@ -109,5 +118,3 @@ if __name__ == '__main__':
         debug=True,
         use_reloader=True,
     )
-
-
