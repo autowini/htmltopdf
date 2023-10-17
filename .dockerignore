@@ -1,0 +1,7 @@
+venv/
+loadtest/
+*.pdf
+*.html
+
+.idea/
+__pycache__/
