@@ -30,7 +30,7 @@ def print_elapsed_time(func):
 wkhtmltopdf_options = {
     'page-size': 'A4',  # A4, Letter, Legal
     'encoding': "UTF-8",
-    'minimum-font-size': "14",
+    # 'minimum-font-size': "14",
 }
 
 
