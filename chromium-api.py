@@ -76,10 +76,14 @@ async def url_to_pdf(
     pdf = await page.pdf({
         'format': 'A4',
         'landscape': orientation == 'landscape',
+        'printBackground': True,
         # 'path': _output_path,
-        # 'margin': {
-        #     'top': '10mm'
-        # },
+        'margin': {
+            'top': '10mm',
+            'bottom': '10mm',
+            'left': '10mm',
+            'right': '10mm',
+        },
     })
 
     app.logger.debug('브라우저 종료')
