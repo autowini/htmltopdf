@@ -73,9 +73,11 @@ async def url_to_pdf(
     await page.goto(url)
 
     app.logger.debug('PDF로 변환 및 저장')
-    pdf = await page.pdf({
+    _landscape = orientation == 'landscape'
+    app.logger.debug(f'landscape: {_landscape}')
+    _pdf = await page.pdf({
         'format': 'A4',
-        'landscape': orientation == 'landscape',
+        'landscape': _landscape,
         'printBackground': True,
         # 'path': _output_path,
         'margin': {
@@ -89,26 +91,30 @@ async def url_to_pdf(
     app.logger.debug('브라우저 종료')
     await browser.close()
 
-    return pdf
+    return _pdf
 
 
 @app.route(rule='/pdf/url', methods=['GET'])
 @print_elapsed_time
 def get_pdf_from_url():
     # req_param: dict = request.json
-    req_param: dict = request.args
+    req_param: dict = request.args.to_dict()  # ImmutableMultiDict -> dict
 
     try:
-        app.logger.info(req_param['url'])
+        _url = req_param.get('url')
+        app.logger.info(_url)
+
+        _orientation = req_param.get('orientation', 'portrait')
+
         pdf_binary_data = loop.run_until_complete(
             url_to_pdf(
-                url=req_param['url'],
-                orientation=req_param['orientation']
+                url=_url,
+                orientation=_orientation
             )
         )
 
-    except Exception as e:
-        app.logger.error(e)
+    except Exception as exception:
+        app.logger.error(f"{type(exception)}-{exception}")
         res: dict[str, str] = {
             "message": "Something went wrong. Please try again later."
         }
