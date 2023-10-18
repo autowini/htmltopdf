@@ -37,7 +37,10 @@ def print_elapsed_time(func):
     return wrapper
 
 
-async def url_to_pdf(url):
+async def url_to_pdf(
+        url: str,
+        orientation: str = 'portrait',
+):
     print(os.environ["PATH"])
     # GUI(gtk)
     command_chrome = shutil.which('google-chrome')
@@ -72,6 +75,7 @@ async def url_to_pdf(url):
     app.logger.debug('PDF로 변환 및 저장')
     pdf = await page.pdf({
         'format': 'A4',
+        'landscape': orientation == 'landscape',
         # 'path': _output_path,
         # 'margin': {
         #     'top': '10mm'
@@ -93,7 +97,10 @@ def get_pdf_from_url():
     try:
         app.logger.info(req_param['url'])
         pdf_binary_data = loop.run_until_complete(
-            url_to_pdf(url=req_param['url'])
+            url_to_pdf(
+                url=req_param['url'],
+                orientation=req_param['orientation']
+            )
         )
 
     except Exception as e:
