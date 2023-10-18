@@ -1,4 +1,4 @@
-version = 0.1.11
+version = 0.1.12
 image_name = htmltopdf
 container_name = htmltopdf
 
@@ -12,11 +12,15 @@ clean: docker-rmi
 
 .PHONE: run
 run:
-	python3 api.py
+	python3 chromium-api.py
 
-.PHONY: docker-build
-docker-build:
-	sudo docker build . -t ${image_name} -t ${image_name}:${version}
+.PHONY: docker-build-chromium
+docker-build-chromium:
+	sudo docker build . -f Dockerfile-chromium -t ${image_name} -t ${image_name}:${version}
+
+.PHONY: docker-build-webkit
+docker-build-webkit:
+	sudo docker build . -f Dockerfile-webkit -t ${image_name} -t ${image_name}:${version}
 
 .PHONY: docker-run
 docker-run:
@@ -39,4 +43,3 @@ docker-rmi:
 .PHONY: check-docker-layers
 check-docker-layers:
 	sudo docker history ${image_name}:${version}
-
