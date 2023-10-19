@@ -51,6 +51,7 @@ async def url_to_pdf(
 
     app.logger.debug('headless Chromium 브라우저 시작')
     browser = await launch(
+        # logLevel=logging.DEBUG,
         executablePath=command_chrome,
         headless=True,
         args=[
@@ -135,11 +136,15 @@ def get_pdf_from_url():
 
 
 if __name__ == '__main__':
+    # Flask 로그 레벨 설정
     app.logger.setLevel(logging.DEBUG)
+
+    # pyppeteer 로그 레벨 설정
+    logging.getLogger('pyppeteer').setLevel(logging.DEBUG)
 
     app.run(
         host="0.0.0.0",  # 명시하지 않으면 `localhost`만 인식함.
         port=5000,
         # use_reloader=True,
-        debug=False,  # 개발 시 `True`로 설정
+        debug=True,  # 개발 시 `True`로 설정
     )
