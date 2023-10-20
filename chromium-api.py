@@ -54,6 +54,7 @@ async def url_to_pdf(
         # logLevel=logging.DEBUG,
         executablePath=command_chrome,
         headless=True,
+        timeout=10_000,  # (ms)
         args=[
             "--no-sandbox",
             "--single-process",
@@ -77,9 +78,10 @@ async def url_to_pdf(
     _landscape = orientation == 'landscape'
     app.logger.debug(f'landscape: {_landscape}')
     _pdf = await page.pdf({
-        'format': 'A4',
-        'landscape': _landscape,
-        'printBackground': True,
+        'format': 'A4',  # Paper size
+        'landscape': _landscape,  # 가로 방향으로 출력
+        'printBackground': True,  # Background graphics will be printed.
+        'displayHeaderFooter': False,  # Display header and footer.
         # 'path': _output_path,
         'margin': {
             'top': '10mm',
