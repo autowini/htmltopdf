@@ -10,7 +10,9 @@ from flask import Flask, Response, request
 from pyppeteer import launch
 
 app = Flask(__name__)
-loop = asyncio.get_event_loop()
+
+
+# loop = asyncio.get_event_loop()
 
 
 # logging decorator
@@ -109,6 +111,7 @@ def get_pdf_from_url():
 
         _orientation = req_param.get('orientation', 'portrait')
 
+        loop = asyncio.new_event_loop()
         pdf_binary_data = loop.run_until_complete(
             url_to_pdf(
                 url=_url,
