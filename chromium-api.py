@@ -43,11 +43,9 @@ async def url_to_pdf(
         url: str,
         orientation: str = 'portrait',
 ):
-    print(os.environ["PATH"])
-    # GUI(gtk)
+    app.logger.debug(os.environ["PATH"])
     command_chrome = shutil.which('google-chrome')
     # command_chrome = shutil.which('chromium-browser')
-    # CLI
     # command_chrome = shutil.which('chromium')
     app.logger.debug(f'which chrome: {command_chrome}')
 
@@ -74,7 +72,13 @@ async def url_to_pdf(
     page = await browser.newPage()
 
     app.logger.debug('URL로 이동')
-    await page.goto(url)
+    # FIXME: 접근할 수 없는 페이지, 서버가 응답하지 않는 페이지 등을 요청하는 경우
+    # 해당 이벤트 루프가 상위 레이어에서 타임아웃 발생할 때까지 대기함.
+    goto_options = {
+        'timeout': 10_000,
+        # 'waitUntil': 'networkidle0',
+    }
+    await page.goto(url=url, options=goto_options)
 
     app.logger.debug('PDF로 변환 및 저장')
     _landscape = orientation == 'landscape'
