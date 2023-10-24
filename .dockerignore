@@ -2,6 +2,7 @@ venv/
 loadtest/
 *.pdf
 *.html
+*.log
 
 .idea/
 __pycache__/

@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  htmltopdf:
+    image: htmltopdf:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile-chromium
+    container_name: htmltopdf
+    volumes: # host:container
+      - "./logs:/app/logs:rw"
+    ports:
+      - "5000:5000"

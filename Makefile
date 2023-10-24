@@ -1,4 +1,4 @@
-version = 0.2.4
+version = 0.2.5
 image_name = htmltopdf
 container_name = htmltopdf
 
@@ -16,7 +16,7 @@ run:
 
 .PHONY: docker-build-chromium
 docker-build-chromium:
-	sudo docker build . -f Dockerfile-chromium -t ${image_name} -t ${image_name}:${version}
+	sudo docker build . -f Dockerfile-chromium -t ${image_name} -t ${image_name}:${version} # --no-cache
 
 .PHONY: docker-build-webkit
 docker-build-webkit:
@@ -24,7 +24,7 @@ docker-build-webkit:
 
 .PHONY: docker-run
 docker-run:
-	sudo docker run -d --name ${container_name} -p 5000:5000 ${image_name}:${version}
+	sudo docker run -d --name ${container_name} -p 5000:5000 -v ${PWD}/logs:/app/logs:rw ${image_name}:${version}
 
 .PHONY: docker-stop
 docker-stop:

@@ -1,6 +1,7 @@
 *.pdf
 *.html
 venv/
+*.log
 
 .idea/
 __pycache__/
