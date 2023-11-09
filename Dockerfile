@@ -3,8 +3,6 @@ FROM python:3.11-bookworm
 WORKDIR /app
 COPY . /app
 
-RUN apt-get update
-
 # Timezone: KST 설정
 RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
