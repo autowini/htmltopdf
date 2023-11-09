@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 from flask import Flask, Response, request
+from flask_cors import CORS
 from pyppeteer import launch
 
 app = Flask(__name__)
@@ -170,9 +171,11 @@ if __name__ == '__main__':
     # pyppeteer 로그 설정
     logging.getLogger('pyppeteer').setLevel(logging.INFO)
 
+    CORS(app, resources={r"*": {"origins": "*"}})
+
     app.run(
         host="0.0.0.0",  # 명시하지 않으면 `localhost`만 인식함.
         port=5000,
-        # use_reloader=True,
+        use_reloader=False,
         debug=True,  # 개발 시 `True`로 설정
     )
