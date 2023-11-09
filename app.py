@@ -1,20 +1,15 @@
 import asyncio
 import json
 import logging
-import os
-import shutil
 import sys
 from datetime import datetime, timedelta
 from functools import wraps
 
 from flask import Flask, Response, request
 from flask_cors import CORS
-from pyppeteer import launch
+from playwright.async_api import async_playwright, PlaywrightContextManager, Playwright
 
 app = Flask(__name__)
-
-
-# loop = asyncio.get_event_loop()
 
 
 # logging decorator
@@ -45,19 +40,20 @@ async def url_to_pdf(
         url: str,
         orientation: str = 'portrait',
 ):
-    app.logger.debug(os.environ["PATH"])
-    command_chrome = shutil.which('google-chrome')
-    # command_chrome = shutil.which('chromium-browser')
-    # command_chrome = shutil.which('chromium')
-    app.logger.debug(f'which chrome: {command_chrome}')
-
+    # NOTE: `playwright install chromium` # or firefox, webkit
+    # Download to $HOME/.cache/ms-playwright/
     app.logger.debug('headless Chromium 브라우저 시작')
-    browser = await launch(
-        # logLevel=logging.DEBUG,
-        executablePath=command_chrome,
+
+    # https://playwright.dev/python/docs/api/class-playwright
+    playwright_context_manager: PlaywrightContextManager = async_playwright()
+    playwright: Playwright = await playwright_context_manager.start()
+
+    # https://playwright.dev/python/docs/api/class-browsertype#browser-type-launch
+    browser = await playwright.chromium.launch(
         headless=True,
         timeout=10_000,  # (ms)
         args=[
+            # https://peter.sh/experiments/chromium-command-line-switches/
             "--no-sandbox",
             "--single-process",
             "--disable-dev-shm-usage",
@@ -65,42 +61,46 @@ async def url_to_pdf(
             "--no-zygote",
         ],
         # avoid "signal only works in main thread of the main interpreter"
-        handleSIGINT=False,
-        handleSIGTERM=False,
-        handleSIGHUP=False,
+        handle_sigint=False,
+        handle_sigterm=False,
+        handle_sighup=False,
     )
 
+    app.logger.debug('새 컨텍스트 열기')
+    # https://playwright.dev/python/docs/api/class-browser#browser-new-context
+    context = await browser.new_context()
+
     app.logger.debug('새 페이지 열기')
-    page = await browser.newPage()
+    page = await context.new_page()
 
     app.logger.debug('URL로 이동')
     # FIXME: 접근할 수 없는 페이지, 서버가 응답하지 않는 페이지 등을 요청하는 경우
     # 해당 이벤트 루프가 상위 레이어에서 타임아웃 발생할 때까지 대기함.
-    goto_options = {
-        'timeout': 10_000,
-        # 'waitUntil': 'networkidle0',
-    }
-    await page.goto(url=url, options=goto_options)
+    # https://playwright.dev/python/docs/api/class-page#page-goto
+    await page.goto(url=url, timeout=10_000, wait_until='domcontentloaded')
 
     app.logger.debug('PDF로 변환 및 저장')
     _landscape = orientation == 'landscape'
     app.logger.debug(f'landscape: {_landscape}')
-    _pdf = await page.pdf({
-        'format': 'A4',  # Paper size
-        'landscape': _landscape,  # 가로 방향으로 출력
-        'printBackground': True,  # Background graphics will be printed.
-        'displayHeaderFooter': False,  # Display header and footer.
-        # 'path': _output_path,
-        'margin': {
+    # https://playwright.dev/python/docs/api/class-page#page-pdf
+    _pdf = await page.pdf(
+        format='A4',
+        landscape=_landscape,
+        print_background=True,
+        display_header_footer=False,
+        margin={
             'top': '10mm',
             'bottom': '10mm',
             'left': '10mm',
             'right': '10mm',
-        },
-    })
+        }
+    )
 
+    # https://playwright.dev/python/docs/api/class-browser#browser-close
     app.logger.debug('브라우저 종료')
     await browser.close()
+    # https://playwright.dev/python/docs/api/class-playwright#playwright-stop
+    await playwright.stop()
 
     return _pdf
 
@@ -168,14 +168,11 @@ if __name__ == '__main__':
     flask_logger.setLevel(logging.DEBUG)
     logging.getLogger('websockets').setLevel(logging.INFO)
 
-    # pyppeteer 로그 설정
-    logging.getLogger('pyppeteer').setLevel(logging.INFO)
-
     CORS(app, resources={r"*": {"origins": "*"}})
 
     app.run(
         host="0.0.0.0",  # 명시하지 않으면 `localhost`만 인식함.
         port=5000,
-        use_reloader=False,
+        use_reloader=True,
         debug=True,  # 개발 시 `True`로 설정
     )

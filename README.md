@@ -9,7 +9,7 @@ make run
 ## Docker Image 빌드
 
 ```shell
-make docker-build-chromium
+make docker-build
 ```
 
 ## Docker Container 실행
