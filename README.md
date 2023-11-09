@@ -1,5 +1,11 @@
 # HTML to PDF
 
+## 사용 모듈
+
+- ~~[wkhtmltopdf](https://github.com/wkhtmltopdf/wkhtmltopdf)~~
+- ~~[puppeteer](https://github.com/puppeteer/puppeteer)~~
+- [microsoft/playwright](https://github.com/microsoft/playwright-python)
+
 ## Local 실행
 
 ```shell
