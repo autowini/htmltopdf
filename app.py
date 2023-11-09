@@ -66,23 +66,26 @@ async def url_to_pdf(
         handle_sighup=False,
     )
 
-    app.logger.debug('새 컨텍스트 열기')
     # https://playwright.dev/python/docs/api/class-browser#browser-new-context
+    app.logger.debug('새 컨텍스트 열기')
     context = await browser.new_context()
 
     app.logger.debug('새 페이지 열기')
     page = await context.new_page()
 
-    app.logger.debug('URL로 이동')
-    # FIXME: 접근할 수 없는 페이지, 서버가 응답하지 않는 페이지 등을 요청하는 경우
-    # 해당 이벤트 루프가 상위 레이어에서 타임아웃 발생할 때까지 대기함.
     # https://playwright.dev/python/docs/api/class-page#page-goto
-    await page.goto(url=url, timeout=10_000, wait_until='domcontentloaded')
+    app.logger.debug('URL로 이동')
+    await page.goto(
+        url=url,
+        timeout=10_000,
+        wait_until='domcontentloaded'
+    )
 
-    app.logger.debug('PDF로 변환 및 저장')
     _landscape = orientation == 'landscape'
     app.logger.debug(f'landscape: {_landscape}')
+
     # https://playwright.dev/python/docs/api/class-page#page-pdf
+    app.logger.debug('PDF로 변환 및 저장')
     _pdf = await page.pdf(
         format='A4',
         landscape=_landscape,
@@ -99,6 +102,7 @@ async def url_to_pdf(
     # https://playwright.dev/python/docs/api/class-browser#browser-close
     app.logger.debug('브라우저 종료')
     await browser.close()
+
     # https://playwright.dev/python/docs/api/class-playwright#playwright-stop
     await playwright.stop()
 
