@@ -8,3 +8,6 @@ loadtest/
 __pycache__/
 
 demo/
+
+webkit/
+pyppeteer/
