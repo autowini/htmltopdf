@@ -4,7 +4,7 @@ services:
     image: htmltopdf:latest
 #    build:
 #      context: .
-#      dockerfile: Dockerfile-chromium
+#      dockerfile: Dockerfile
     container_name: htmltopdf
     volumes: # host:container
       - "./logs:/app/logs:rw"

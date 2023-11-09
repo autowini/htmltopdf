@@ -16,7 +16,7 @@ run:
 
 .PHONY: docker-build
 docker-build:
-	sudo docker build . -f Dockerfile-chromium -t ${image_name} -t ${image_name}:${version} # --no-cache
+	sudo docker build . -t ${image_name} -t ${image_name}:${version} # --no-cache
 
 .PHONY: docker-run
 docker-run:
