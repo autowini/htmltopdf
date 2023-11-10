@@ -16,8 +16,7 @@ def get_pdf_from_url():
     if _url is None:
         raise ValidationError("<url> is required.")
 
-    loop = asyncio.new_event_loop()
-    pdf_binary_data = loop.run_until_complete(
+    pdf_binary_data = asyncio.run(
         url_to_pdf(
             url=_url,
             orientation=req_param.get('orientation', 'portrait')

@@ -16,8 +16,7 @@ def get_pdf_from_content():
     if _html is None:
         raise ValidationError('<html> is required.')
 
-    loop = asyncio.new_event_loop()
-    pdf_binary_data = loop.run_until_complete(
+    pdf_binary_data = asyncio.run(
         content_to_pdf(
             html=_html,
             css=_form.get('css'),
