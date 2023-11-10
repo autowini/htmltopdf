@@ -1,8 +1,6 @@
-import logging
+from flask import current_app as app
 
 from libs.browser import BrowserInstance
-
-log: logging.Logger = logging.getLogger("pdf")
 
 
 async def url_to_pdf(
@@ -15,14 +13,14 @@ async def url_to_pdf(
     :param orientation: 용지 방향 (portrait, landscape)
     :return: PDF 바이너리
     """
-    log.info(url)
+    app.logger.info(url)
 
     browser_instance = BrowserInstance(orientation=orientation)
     browser = await browser_instance.start()
     page = await browser.new_page()
 
     # https://playwright.dev/python/docs/api/class-page#page-goto
-    log.debug('URL로 이동')
+    app.logger.debug('URL로 이동')
     await page.goto(
         url=url,
         timeout=10_000,
@@ -53,7 +51,7 @@ async def content_to_pdf(
     page = await browser.new_page()
 
     # https://playwright.dev/python/docs/api/class-page#page-goto
-    log.debug('Content 생성')
+    app.logger.debug('Content 생성')
     await page.set_content(
         html=html,
         timeout=10_000,
@@ -61,7 +59,7 @@ async def content_to_pdf(
         wait_until='load'  # domcontentloaded, load, networkidle
     )
     if css is not None:
-        log.info('CSS 추가')
+        app.logger.info('CSS 추가')
         # # for testing: addStyleTag가 적용되는지 확인
         # color = '#ff000091'
         # css += (f'\nbody {{ background-color: {color}; }}'

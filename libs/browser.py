@@ -1,8 +1,5 @@
-import logging
-
+from flask import current_app as app
 from playwright.async_api import async_playwright, PlaywrightContextManager, Playwright, Browser, Page, BrowserContext
-
-log: logging.Logger = logging.getLogger("browser")
 
 
 class BrowserInstance:
@@ -26,7 +23,7 @@ class BrowserInstance:
     async def start(self):
         # NOTE: `playwright install chromium` # or firefox, webkit
         # Download to $HOME/.cache/ms-playwright/
-        log.debug('headless Chromium 브라우저 시작')
+        app.logger.debug('headless Chromium 브라우저 시작')
 
         # https://playwright.dev/python/docs/api/class-playwright
         self.playwright: Playwright = await self.playwright_context_manager.start()
@@ -50,19 +47,19 @@ class BrowserInstance:
         )
 
         # https://playwright.dev/python/docs/api/class-browser#browser-new-context
-        log.debug('새 컨텍스트 열기')
+        app.logger.debug('새 컨텍스트 열기')
         self.context: BrowserContext = await self.browser.new_context()
 
         return self
 
     async def new_page(self):
-        log.debug('새 페이지 열기')
+        app.logger.debug('새 페이지 열기')
         self.page: Page = await self.context.new_page()
         return self.page
 
     async def pdf(self):
         # https://playwright.dev/python/docs/api/class-page#page-pdf
-        log.debug('PDF로 변환 및 저장')
+        app.logger.debug('PDF로 변환 및 저장')
         return await self.page.pdf(
             format='A4',
             landscape=self._landscape,
@@ -80,7 +77,7 @@ class BrowserInstance:
         if self.browser is None:
             return
 
-        log.debug('브라우저 종료')
+        app.logger.debug('브라우저 종료')
 
         # https://playwright.dev/python/docs/api/class-browser#browser-close
         await self.browser.close()

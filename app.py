@@ -1,82 +1,16 @@
-import asyncio
-import json
 import logging
 import sys
 
-from flask import Flask, Response, request
+from flask import Flask
 from flask_cors import CORS
 
-from libs.pdf import url_to_pdf, content_to_pdf
-from libs.perf import print_elapsed_time
+from api.errorhandlers import setup_errorhandlers
+from api.pdf_from_content import get_pdf_from_content
+from api.pdf_from_url import get_pdf_from_url
 
 app = Flask(__name__)
 
-
-@app.errorhandler(Exception)
-def handle_bad_request(exception):
-    app.logger.error(f"{type(exception)}-{exception}")
-    res: dict[str, str] = {
-        "message": exception.args[0]
-    }
-    return Response(
-        response=json.dumps(    res),
-        mimetype='application/json',
-        status=500,
-    )
-
-
-@app.get(rule='/pdf/url')
-@print_elapsed_time
-def get_pdf_from_url():
-    # req_param: dict = request.json
-    req_param: dict = request.args.to_dict()  # ImmutableMultiDict -> dict
-
-    loop = asyncio.new_event_loop()
-    pdf_binary_data = loop.run_until_complete(
-        url_to_pdf(
-            url=req_param.get('url'),
-            orientation=req_param.get('orientation', 'portrait')
-        )
-    )
-
-    filename = req_param.get('filename', 'output')
-    return Response(
-        response=pdf_binary_data,
-        mimetype='application/pdf',
-        headers={
-            'Content-Disposition': f'attachment;filename={filename}.pdf'
-        }
-    )
-
-
-@app.post(rule='/pdf/content')
-@print_elapsed_time
-def get_pdf_from_content():
-    _form = request.form
-
-    _html = _form.get('html')
-    # app.logger.debug(_html)
-    if _html is None:
-        raise ValueError('html is required.')
-
-    loop = asyncio.new_event_loop()
-    pdf_binary_data = loop.run_until_complete(
-        content_to_pdf(
-            html=_html,
-            css=_form.get('css'),
-            orientation=_form.get('orientation', None)
-        )
-    )
-
-    filename = _form.get('filename', 'output')
-    return Response(
-        response=pdf_binary_data,
-        mimetype='application/pdf',
-        headers={
-            'Content-Disposition': f'attachment;filename={filename}.pdf'
-        }
-    )
-
+setup_errorhandlers(app)
 
 if __name__ == '__main__':
     logging_format = '%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s] [%(name)s:%(module)s] - %(message)s'
@@ -102,9 +36,12 @@ if __name__ == '__main__':
 
     CORS(app, resources={r"*": {"origins": "*"}})
 
+    app.add_url_rule(rule='/pdf/url', view_func=get_pdf_from_url, methods=['GET'])
+    app.add_url_rule(rule='/pdf/content', view_func=get_pdf_from_content, methods=['POST'])
+
     app.run(
         host="0.0.0.0",  # 명시하지 않으면 `localhost`만 인식함.
         port=5000,
-        use_reloader=True,
+        use_reloader=False,
         debug=True,  # 개발 시 `True`로 설정
     )

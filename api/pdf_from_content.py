@@ -1,0 +1,35 @@
+import asyncio
+
+from flask import request, Response
+from werkzeug.routing import ValidationError
+
+from libs.pdf import content_to_pdf
+from libs.perf import print_elapsed_time
+
+
+@print_elapsed_time
+def get_pdf_from_content():
+    _form = request.form
+
+    _html = _form.get('html')
+    # app.logger.debug(_html)
+    if _html is None:
+        raise ValidationError('<html> is required.')
+
+    loop = asyncio.new_event_loop()
+    pdf_binary_data = loop.run_until_complete(
+        content_to_pdf(
+            html=_html,
+            css=_form.get('css'),
+            orientation=_form.get('orientation', None)
+        )
+    )
+
+    filename = _form.get('filename', 'output')
+    return Response(
+        response=pdf_binary_data,
+        mimetype='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment;filename={filename}.pdf'
+        }
+    )
