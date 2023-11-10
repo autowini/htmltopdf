@@ -1,4 +1,4 @@
-version = 0.4.1
+version = 0.4.2
 image_name = htmltopdf
 container_name = htmltopdf
 
