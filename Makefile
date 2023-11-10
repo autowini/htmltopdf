@@ -19,6 +19,7 @@ run:
 .PHONY: docker-build
 docker-build:
 	sudo docker build . -t ${image_name} -t ${image_name}:${version} # --no-cache
+	@# sudo docker system prune --all
 
 # 빌드된 Docker 이미지로 컨테이너 생성
 .PHONY: docker-run
@@ -39,6 +40,7 @@ docker-logs:
 .PHONY: docker-rmi
 docker-rmi:
 	@# https://www.gnu.org/software/make/manual/html_node/Errors.html#Errors-in-Recipes
+	@# To ignore errors in a recipe line, write a ‘-’ at the beginning of the line’s text (after the initial tab).
 	-sudo docker rmi ${image_name}
 	sudo docker rmi $$(sudo docker images '${image_name}' -a -q)
 
