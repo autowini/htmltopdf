@@ -49,3 +49,8 @@ docker-rmi:
 .PHONY: check-docker-layers
 check-docker-layers:
 	sudo docker history ${image_name}:${version}
+
+# core.{number} 파일 확인
+.PHONY: check-core
+check-core:
+	sudo docker exec -it ${container_name} ls -hal

@@ -78,6 +78,8 @@ class BrowserInstance:
             return
 
         app.logger.debug('브라우저 종료')
+        # https://playwright.dev/docs/api/class-browsercontext#browser-context-close
+        await self.context.close()
 
         # https://playwright.dev/python/docs/api/class-browser#browser-close
         await self.browser.close()
