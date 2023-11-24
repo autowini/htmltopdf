@@ -1,5 +1,7 @@
 import asyncio
+import threading
 
+from flask import current_app as app
 from flask import request, Response
 from werkzeug.routing import ValidationError
 
@@ -22,6 +24,7 @@ def get_pdf_from_url():
             orientation=req_param.get('orientation', 'portrait')
         )
     )
+    app.logger.debug(f"threading.active_count(): {threading.active_count()}")
 
     filename = req_param.get('filename', 'output')
     return Response(
