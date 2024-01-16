@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import pytest
@@ -30,7 +31,7 @@ async def test_core_file():
         args=[
             # https://peter.sh/experiments/chromium-command-line-switches/
             "--no-sandbox",
-            "--single-process",
+            # "--single-process",
             "--disable-dev-shm-usage",
             "--disable-gpu",
             "--no-zygote",
@@ -54,6 +55,8 @@ async def test_core_file():
         # load로 해야 img.src가 로드됨.
         wait_until='load'  # domcontentloaded, load, networkidle
     )
+
+    await asyncio.sleep(1.0)  # seconds
 
     logging.info('CSS 추가')
     await page.add_style_tag(

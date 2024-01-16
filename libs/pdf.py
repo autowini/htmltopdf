@@ -1,3 +1,5 @@
+import asyncio
+
 from flask import current_app as app
 
 from libs.browser import BrowserInstance
@@ -58,6 +60,7 @@ async def content_to_pdf(
         # load로 해야 img.src가 로드됨.
         wait_until='load'  # domcontentloaded, load, networkidle
     )
+    await asyncio.sleep(1.0)  # seconds
     if css is not None:
         app.logger.info('CSS 추가')
         # # for testing: addStyleTag가 적용되는지 확인

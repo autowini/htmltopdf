@@ -35,7 +35,7 @@ class BrowserInstance:
             args=[
                 # https://peter.sh/experiments/chromium-command-line-switches/
                 "--no-sandbox",
-                "--single-process",
+                # "--single-process",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
                 "--no-zygote",
