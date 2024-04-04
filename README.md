@@ -23,4 +23,3 @@ make docker-build
 ```shell
 make docker-run
 ```
-

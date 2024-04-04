@@ -36,6 +36,7 @@ if __name__ == '__main__':
 
     CORS(app, resources={r"*": {"origins": "*"}})
 
+    app.add_url_rule(rule='/health', view_func=lambda: "OK", methods=['GET'])  # Health Check
     app.add_url_rule(rule='/pdf/url', view_func=get_pdf_from_url, methods=['GET'])
     app.add_url_rule(rule='/pdf/content', view_func=get_pdf_from_content, methods=['POST'])
 
